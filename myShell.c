@@ -29,7 +29,8 @@ int get_index_internal_command(char *cmd);
 int main(void)
 {
 	char	buf[MAXLINE];	/* MAXLINE defined in apue.h */
-	char	**cmd_args;	/* MAX_CMD_ARGS defined in splitCmdStr.h */
+	char	*cmd_argv[MAX_CMD_ARGS];	/* MAX_cmd_argv defined in splitCmdStr.h */
+	int 	cmd_argc;
 	pid_t	pid;
 	int	status;
 	int internal_cmd_index;
@@ -43,12 +44,20 @@ int main(void)
 	while (fgets(buf, MAXLINE, stdin) != NULL) {
 		/* replace newline with null */
 		if (buf[strlen(buf) - 1] == '\n')
+		{
+			/* if only newline, print prompt again */
+			if(strlen(buf) == 1)
+			{
+				print_prompt();
+				continue;
+			}
 			buf[strlen(buf) - 1] = 0; 	
+		}	
 		
 		/* split command string to args array */
-		cmd_args = split_cmd_str(buf, cmd_args);
+		cmd_argc = split_cmd_str(buf, cmd_argv);
 
-		internal_cmd_index = get_index_internal_command(cmd_args[0]);
+		internal_cmd_index = get_index_internal_command(cmd_argv[0]);
 		if (internal_cmd_index != NOTEXIST)
 		{
 			/* internal command */
@@ -56,11 +65,11 @@ int main(void)
 			{
 				case EXPORT:
 					/* export environment variable */
-					export_env_var(cmd_args);
+					export_env_var(cmd_argv, cmd_argc);
 					break;
 				default:
 					/* wouldn't happen */
-					err_ret("unknown internal command: %s", cmd_args[0]);
+					err_ret("unknown internal command: %s", cmd_argv[0]);
 					break;
 			}
 		} else {
@@ -68,7 +77,7 @@ int main(void)
 			if ((pid = fork()) < 0) {
 				err_sys("fork error");
 			} else if (pid == 0) {		/* child */
-				execvp(cmd_args[0], cmd_args);
+				execvp(cmd_argv[0], cmd_argv);
 				err_ret("couldn't execute: %s", buf);
 				exit(127);
 			}

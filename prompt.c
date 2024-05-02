@@ -1,5 +1,6 @@
-#include<stdio.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "prompt.h"
 
 const char *ENV_PROMPT = "SHELL_PROMPT";

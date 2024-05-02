@@ -1,15 +1,18 @@
-#include "apue.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include "export.h"
 
-void export_env_var(char **cmd_args)
+void export_env_var(char **cmd_args, int num)
 {
-    if (sizeof(cmd_args) / sizeof(char *) != 3)
+    if (num != 2)
     {
-        err_ret("export: too few or too many arguments\nusage: export VAR=VALUE");
+        printf("export: too few or too many arguments\nusage: export VAR=VALUE\n");
+	return;
     } 
 
     if (putenv(cmd_args[1]) != 0)
     {
-        err_ret("export: putenv error");
+        printf("export: putenv error\n");
+	return;
     }
 }
