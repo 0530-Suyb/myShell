@@ -1,7 +1,6 @@
 #include "apue.h"
 #include "export.h"
 
-
 void export_env_var(char **cmd_args)
 {
     if (sizeof(cmd_args) / sizeof(char *) != 3)

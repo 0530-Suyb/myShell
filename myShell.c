@@ -48,7 +48,7 @@ int main(void)
 		/* split command string to args array */
 		cmd_args = split_cmd_str(buf, cmd_args);
 
-		internal_cmd_index = is_internal_command(cmd_args[0])
+		internal_cmd_index = get_index_internal_command(cmd_args[0]);
 		if (internal_cmd_index != NOTEXIST)
 		{
 			/* internal command */
