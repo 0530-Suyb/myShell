@@ -1,4 +1,7 @@
 #include "innerCmd.h"
+#include "export.h"
+#include <stdlib.h>
+#include <string.h>
 
 /* shell internal commands */
 const char* INTERNAL_COMMANDS[] = {
@@ -39,7 +42,7 @@ int do_inner_command(int cmd_argc, char **cmd_argv)
 	int isInnerCmd;
 	int index = get_index_internal_command(cmd_argv[0]);
 
-    switch (index)
+    	switch (index)
 	{
 		case EXPORT:
 			/* export environment variable */

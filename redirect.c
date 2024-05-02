@@ -1,5 +1,6 @@
 #include "redirect.h"
 #include <stdio.h>
+#include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -14,9 +15,8 @@ int redirect(int argc, char **argv)
     int i, j;
     int fd;
     int dup2_flag;
-    int new_argc = argc;
 
-    for (i = 0; i < argc; i++)
+    for (i = 0; i < argc; )
     {
         if (strcmp(argv[i], ">") == 0) /* output redirect, cover */
         {
@@ -29,7 +29,7 @@ int redirect(int argc, char **argv)
             fd = open(argv[i + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
             if (fd == -1)
             {
-                printf("redirect: open file %s err", argv[i + 1]);
+                printf("redirect: open file %s err\n", argv[i + 1]);
                 return -1;
             }
 
@@ -37,7 +37,7 @@ int redirect(int argc, char **argv)
             if (dup2_flag == -1)
             {
                 close(fd);
-                printf("redirect: dup2 err");
+                printf("redirect: dup2 err\n");
                 return -1;
             }
         } 
@@ -52,7 +52,7 @@ int redirect(int argc, char **argv)
             fd = open(argv[i + 1], O_WRONLY | O_CREAT | O_APPEND, 0644);
             if (fd == -1)
             {
-                printf("redirect: open file %s err", argv[i + 1]);
+                printf("redirect: open file %s err\n", argv[i + 1]);
                 return -1;
             }
 
@@ -60,7 +60,7 @@ int redirect(int argc, char **argv)
             if (dup2_flag == -1)
             {
                 close(fd);
-                printf("redirect: dup2 err");
+                printf("redirect: dup2 err\n");
                 return -1;
             }
         } 
@@ -75,11 +75,11 @@ int redirect(int argc, char **argv)
             fd = open(argv[i + 1], O_RDONLY);
             if (fd == -1)
             {
-                printf("redirect: open file %s err", argv[i + 1]);
+                printf("redirect: open file %s err\n", argv[i + 1]);
                 return -1;
             }
 
-            dup2_flag = dup2(fd, STDOUT_FILENO);
+            dup2_flag = dup2(fd, STDIN_FILENO);
             if (dup2_flag == -1)
             {
                 close(fd);
@@ -90,19 +90,20 @@ int redirect(int argc, char **argv)
         else
         {
             /* not redirect symbol */
+	    i++;
             continue;
         } 
 
         close(fd);
         
         /* remove redirect symbol and file name */
-        new_argc = new_argc - 2;
-        for (j = i; j < new_argc; j++)
+        argc = argc - 2;
+        for (j = i; j < argc; j++)
         {
             argv[j] = argv[j + 2];
         }
-        argv[new_argc] = NULL;
+        argv[argc] = NULL;
     }
 
-    return new_argc;
+    return argc;
 }

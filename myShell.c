@@ -1,8 +1,9 @@
 #include "apue.h"
 #include "myShell.h"
-#include "export.h"
 #include "prompt.h"
 #include "splitCmdStr.h"
+#include "innerCmd.h"
+#include "redirect.h"
 #include <sys/wait.h>
 
 /* my SIGINT signal-catching function */
@@ -46,6 +47,7 @@ int main(void)
 		{
 			/* command end with & */
 			cmd_argv[cmd_argc - 1] = NULL;
+			cmd_argc--;
 			bg_flag = 1;
 		}
 
@@ -59,7 +61,12 @@ int main(void)
 				err_sys("fork error");
 			} else if (pid == 0) {		/* child */
 				/* redirect just take effect in child process */
-				redirect(cmd_argc, cmd_argv);
+				cmd_argc = redirect(cmd_argc, cmd_argv);
+				if (cmd_argc == -1)
+				{
+					exit(-1);
+				}
+
 				execvp(cmd_argv[0], cmd_argv);
 				err_ret("couldn't execute: %s", buf);
 				exit(127);
