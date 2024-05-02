@@ -4,7 +4,7 @@
 #include "splitCmdStr.h"
 
 /* split command string to args array ending with NULL and return the number of args */
-int split_cmd_str(char *cmd_str, char **cmd_args)
+int split_cmd_str(char *cmd_str, char **argv)
 {
     int i = 0;
     char *p = strtok(cmd_str, DELIM);
@@ -16,10 +16,10 @@ int split_cmd_str(char *cmd_str, char **cmd_args)
             printf("Too many arguments, MAX_CMD_ARGS = %d\n", MAX_CMD_ARGS);
             break;
         }
-        cmd_args[i++] = p;
+        argv[i++] = p;
         p = strtok(NULL, DELIM);
     }
-    cmd_args[i] = NULL;
+    argv[i] = NULL;
 
     return i;
 }
