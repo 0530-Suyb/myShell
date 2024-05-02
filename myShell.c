@@ -7,14 +7,24 @@
 
 /* shell internal commands */
 const char* INTERNAL_COMMANDS[] = {
+	"",	/* null command */
 	"export",
+};
+
+enum INTERNAL_COMMANDS {
+	NOTEXIST, /* command not exist */
+	EXPORT,
 };
 
 /* my SIGINT signal-catching function */
 static void sig_int(int);
 
-/* check if the command is an internal command */
-bool is_internal_command(char *cmd);
+/* 
+	get the index of the internal command
+	if it exist, return the index of the command in INTERNAL_COMMANDS
+	otherwise, return 0
+*/
+int get_index_internal_command(char *cmd);
 
 int main(void)
 {
@@ -22,6 +32,7 @@ int main(void)
 	char	**cmd_args;	/* MAX_CMD_ARGS defined in splitCmdStr.h */
 	pid_t	pid;
 	int	status;
+	int internal_cmd_index;
 
 	/* register a new signal-catching function for SIGINT */
 	if (signal(SIGINT, sig_int) == SIG_ERR)
@@ -37,12 +48,13 @@ int main(void)
 		/* split command string to args array */
 		cmd_args = split_cmd_str(buf, cmd_args);
 
-		if (is_internal_command(cmd_args[0]))
+		internal_cmd_index = is_internal_command(cmd_args[0])
+		if (internal_cmd_index != NOTEXIST)
 		{
 			/* internal command */
-			switch (cmd_args[0])
+			switch (internal_cmd_index)
 			{
-				case 'export':
+				case EXPORT:
 					/* export environment variable */
 					export_env_var(cmd_args);
 					break;
@@ -77,15 +89,15 @@ void sig_int(int signo)
 	exit(0);
 }
 
-bool is_internal_command(char *cmd)
+int get_index_internal_command(char *cmd)
 {
 	int i;
 	for (i = 0; i < sizeof(INTERNAL_COMMANDS) / sizeof(INTERNAL_COMMANDS[0]); i++)
 	{
 		if (strcmp(cmd, INTERNAL_COMMANDS[i]) == 0)
 		{
-			return true;
+			return i;
 		}
 	}
-	return false;
+	return 0;
 }
