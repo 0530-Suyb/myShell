@@ -14,7 +14,7 @@ char **split_cmd_str(char *cmd_str, char **cmd_args)
     
     while (p != NULL)
     {
-        if(i >= MAX_CMD_ARGS)
+        if (i >= MAX_CMD_ARGS)
         {
             printf("Too many arguments, MAX_CMD_ARGS = %d\n", MAX_CMD_ARGS);
             break;
